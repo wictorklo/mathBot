@@ -11,11 +11,16 @@ auth.set_access_token(A_TOKEN, A_TOKEN_SECRET)
 api = tweepy.API(auth)
 
 def calculate(tweet):
-        match = re.search(r'([-+]?[0-9]*\.?[0-9]+\s*[\/\+\-\*\^]\s*)+([-+]?[0-9]*\.?[0-9]+)', tweet.text)
-        if '^' in match.group():
-                match.group().replace('^', '**')
+        match = re.search(r'(\(?[-+]?[0-9]*\.?[0-9]+\s*[\/\+\-\*\^]\s*\)?)+(\(?[-+]?[0-9]*\.?[0-9]+\)?)', tweet.text)
+
         if match and str(tweet.id) not in calculatedTweets:
                 calculatedTweets.append(str(tweet.id))
+                
+                if '^' in match.group():
+                        match.group().replace("^", "**")
+                if match.group().count("(") != match.group().count(")"):
+                        api.update_status("Error: invalid amount of paranthesis @" + str(tweet.user.screen_name), tweet.id)
+                        return
                 print(match.group())
                 expression = str(match.group())
                 try:
@@ -33,6 +38,7 @@ def calculate(tweet):
 
         elif str(tweet.id) not in calculatedTweets:
                 calculatedTweets.append(str(tweet.id))
+                
                 print("Could not find any matches")
                 api.update_status("Could not find math expression @" + str(tweet.user.screen_name), tweet.id )
         time.sleep(60)
