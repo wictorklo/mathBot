@@ -69,4 +69,4 @@ while 1==1:
 
         #api.update_status("Testing tweet 1", )
         print("Finished a run")
-        time.sleep(30)
+        time.sleep(60)
